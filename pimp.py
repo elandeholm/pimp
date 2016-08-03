@@ -4,6 +4,7 @@ from sys import argv
 from tokenize import tokenize
 from io import BytesIO
 from pprint import PrettyPrinter
+from keyword import iskeyword
 
 if __name__ == "__main__":
 	pp = PrettyPrinter(indent = 4, compact = True)
@@ -11,6 +12,7 @@ if __name__ == "__main__":
 
 	for arg in argv[1:]:
 		valid_id = False
+		
 		br = BytesIO(arg.encode('utf-8')).readline
 		t = tokenize(br)
 		
@@ -32,16 +34,19 @@ if __name__ == "__main__":
 				valid_id = True
 
 		if valid_id:
-			code = 'import {}'.format(identifier)				
-			env = {}
-			try:
-				exec(code, env)
-				print(repr(env[identifier]))
-				print('the following symbols were added:')
-				pp(dir(env[identifier]))
+			if not iskeyword(identifier):
+				code = 'import {}'.format(identifier)				
+				env = {}
+				try:
+					exec(code, env)
+					print(repr(env[identifier]))
+					print('the following symbols were added:')
+					pp(dir(env[identifier]))
 				
-			except ImportError:
-				print('import {} failed'.format(identifier))
+				except ImportError:
+					print('import {} failed'.format(identifier))
+			else:
+				print('\'{}\' is a python keyword'.format(arg))
 		else:
 			print('invalid identifier: {}'.format(repr(arg)))
 
