@@ -5,8 +5,7 @@ from pprint import PrettyPrinter
 from keyword import iskeyword
 
 if __name__ == "__main__":
-	pp = PrettyPrinter(indent = 4, compact = True)
-	pp = pp.pprint
+	pp = PrettyPrinter(indent = 4, compact = True).pprint
 
 	for arg in argv[1:]:
 		if arg.isidentifier():
