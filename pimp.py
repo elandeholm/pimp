@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 
 from sys import argv
-from tokenize import tokenize
-from io import BytesIO
 from pprint import PrettyPrinter
 from keyword import iskeyword
 
@@ -11,40 +9,18 @@ if __name__ == "__main__":
 	pp = pp.pprint
 
 	for arg in argv[1:]:
-		valid_id = False
-		
-		br = BytesIO(arg.encode('utf-8')).readline
-		t = tokenize(br)
-		
-		# skip encoding
-		
-		next(t)
-
-		# accept NAME token
-
-		tokenized = next(t)
-		if tokenized.type == 1:
-			identifier = tokenized.string
-			tokenized = next(t)
-			
-			# make sure tokenization is terminated after the first NAME token
-			# this will fail when arg is ie. 'x y'
-			
-			if tokenized.type == 0:
-				valid_id = True
-
-		if valid_id:
-			if not iskeyword(identifier):
-				code = 'import {}'.format(identifier)				
+		if arg.isidentifier():
+			if not iskeyword(arg):
+				code = 'import {}'.format(arg)				
 				env = {}
 				try:
 					exec(code, env)
-					print(repr(env[identifier]))
+					print(repr(env[arg]))
 					print('the following symbols were added:')
-					pp(dir(env[identifier]))
+					pp(dir(env[arg]))
 				
 				except ImportError:
-					print('import {} failed'.format(identifier))
+					print('import {} failed'.format(arg))
 			else:
 				print('\'{}\' is a python keyword'.format(arg))
 		else:
